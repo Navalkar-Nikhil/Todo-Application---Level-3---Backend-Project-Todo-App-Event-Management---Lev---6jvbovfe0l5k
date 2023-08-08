@@ -1,3 +1,4 @@
+
 const Users   = require("../models/user.js");
 const jwt = require("jsonwebtoken");
 const Tasks   = require("../models/task.js");
@@ -82,7 +83,7 @@ req.body = {
 1. Middleware isowner is Implemented in ../middleware/taskmiddleware.js (This will also handel if task with given _id doesnot exist).
 2. Return the detail of the task with given task_id after update.
 
-Response --> 
+Response -->
 
 1. Success
 
@@ -111,9 +112,27 @@ json = {
 
 
 const updateTask = async (req, res) => {
-    
+   
     const task_id = req.body.task_id;
     //Write your code here.
+    try{
+        const task = await Tasks.findByIdAndUpdate(
+            task_id,{$set:req.body},
+            {new :true}
+        );
+
+        res.status(200).json({
+            status:'success',
+            data:task
+        })
+       
+
+    }catch(err){
+        res.status(404).json({
+            status:'fail',
+            data:err.message
+        })
+    }
 }
 
 
@@ -130,7 +149,7 @@ req.body = {
 1. Middleware isowner is Implemented in ../middleware/taskmiddleware.js (This will also handel if task with given _id doesnot exist and invalid token).
 2. delete the task with given task_id.
 
-Response --> 
+Response -->
 
 1. Success
 
@@ -154,6 +173,18 @@ const deleteTask = async (req, res) => {
 
     const task_id = req.body.task_id;
     //Write your code here.
+    try{
+      await Tasks.findByIdAndDelete(task_id);
+      res.status(200).json({
+        status:'success',
+        message:'Task deleted successfully'
+      })
+    }catch(err){
+       res.status(404).json({
+        status:'fail',
+        message:err.message
+       })
+    }
 
 }
 
